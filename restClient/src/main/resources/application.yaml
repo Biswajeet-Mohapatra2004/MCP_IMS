@@ -1,3 +1,34 @@
 spring:
   application:
     name: restClient
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/ims-realm
+
+  docker:
+    compose:
+      lifecycle-management: start-only
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ims_db
+    username: ims_user
+    password: ims_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+server:
+    port: 8081
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG   # helpful while wiring up OAuth2 — turn down once it's stable
+    org.hibernate.SQL: DEBUG
