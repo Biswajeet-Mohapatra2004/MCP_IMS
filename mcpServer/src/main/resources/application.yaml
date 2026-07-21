@@ -1,3 +1,31 @@
 spring:
   application:
     name: mcpServer
+  ai:
+    mcp:
+      server:
+        name: ims-mcp-server
+        version: 1.0.0
+        type: SYNC
+        protocol: STREAMABLE
+        stdio: false
+        streamable-http:
+          mcp-endpoint: /mcp
+        instructions: "Provides tools to manage an inventory system: products, categories, warehouses, stock levels, and suppliers."
+
+server:
+  port: 8082
+
+inventory:
+  api:
+    base-url: http://localhost:8081
+
+keycloak:
+  token-url: http://localhost:8180/realms/ims-realm/protocol/openid-connect/token
+  client-id: ims-client
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+
+logging:
+  level:
+    root: INFO
+    com.ims.mcpServer: DEBUG

@@ -1,7 +1,5 @@
 package com.ims.restClient.mapper;
 
-package com.ims.restClient.mapper;
-
 import com.ims.restClient.dto.request.WarehouseCreateRequest;
 import com.ims.restClient.dto.response.WarehouseResponse;
 import com.ims.restClient.entity.Warehouse;
