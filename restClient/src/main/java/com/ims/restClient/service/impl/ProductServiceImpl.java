@@ -5,17 +5,21 @@ import com.ims.restClient.dto.request.ProductUpdateRequest;
 import com.ims.restClient.dto.response.ProductResponse;
 import com.ims.restClient.entity.Category;
 import com.ims.restClient.entity.Product;
+import com.ims.restClient.entity.Supplier;
 import com.ims.restClient.exception.DuplicateResourceException;
 import com.ims.restClient.exception.ResourceNotFoundException;
 import com.ims.restClient.mapper.ProductMapper;
 import com.ims.restClient.repository.CategoryRepository;
 import com.ims.restClient.repository.ProductRepository;
+import com.ims.restClient.repository.SupplierRepository;
 import com.ims.restClient.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;   // <-- new
     private final ProductMapper productMapper;
+    private final SupplierRepository supplierRepository;
 
     @Override
     public ProductResponse create(ProductCreateRequest request) {
@@ -39,6 +44,14 @@ public class ProductServiceImpl implements ProductService {
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Category not found with id: " + request.getCategoryId()));
             product.setCategory(category);
+        }
+
+        if (request.getSupplierIds() != null && !request.getSupplierIds().isEmpty()) {
+            Set<Supplier> suppliers = new HashSet<>(supplierRepository.findAllById(request.getSupplierIds()));
+            if (suppliers.size() != request.getSupplierIds().size()) {
+                throw new ResourceNotFoundException("One or more supplier IDs not found");
+            }
+            product.setSuppliers(suppliers);
         }
 
         Product saved = productRepository.save(product);
@@ -68,6 +81,14 @@ public class ProductServiceImpl implements ProductService {
         if (request.getDescription() != null) product.setDescription(request.getDescription());
         if (request.getUnitPrice() != null) product.setUnitPrice(request.getUnitPrice());
         if (request.getReorderThreshold() != null) product.setReorderThreshold(request.getReorderThreshold());
+
+        if (request.getSupplierIds() != null) {
+            Set<Supplier> suppliers = new HashSet<>(supplierRepository.findAllById(request.getSupplierIds()));
+            if (suppliers.size() != request.getSupplierIds().size()) {
+                throw new ResourceNotFoundException("One or more supplier IDs not found");
+            }
+            product.setSuppliers(suppliers);
+        }
 
         Product updated = productRepository.save(product);
         return productMapper.toResponse(updated);

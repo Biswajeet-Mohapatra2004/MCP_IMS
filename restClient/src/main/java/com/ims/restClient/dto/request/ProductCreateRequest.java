@@ -4,6 +4,7 @@ package com.ims.restClient.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 public class ProductCreateRequest {
@@ -22,7 +23,6 @@ public class ProductCreateRequest {
 
     @Min(value = 0, message = "Reorder threshold cannot be negative")
     private Integer reorderThreshold;
-
-
     private Long categoryId;
+    private Set<Long> supplierIds;
 }

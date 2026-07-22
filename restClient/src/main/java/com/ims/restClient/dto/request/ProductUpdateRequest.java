@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 public class ProductUpdateRequest {
@@ -16,4 +17,5 @@ public class ProductUpdateRequest {
 
     @Min(value = 0, message = "Reorder threshold cannot be negative")
     private Integer reorderThreshold;
+    private Set<Long> supplierIds;
 }

@@ -4,6 +4,8 @@ import com.ims.restClient.dto.response.ProductResponse;
 import com.ims.restClient.entity.Product;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class ProductMapper {
 
@@ -29,6 +31,11 @@ public class ProductMapper {
                 .updatedAt(product.getUpdatedAt())
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .suppliers(product.getSuppliers() != null
+                        ? product.getSuppliers().stream()
+                        .map(s -> new ProductResponse.SupplierSummary(s.getId(), s.getName()))
+                        .toList()
+                        : List.of())
                 .build();
     }
 }
