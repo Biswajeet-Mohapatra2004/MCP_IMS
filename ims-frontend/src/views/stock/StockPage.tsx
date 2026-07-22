@@ -1,63 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { StockItem } from "../../api/stock";
-import { stockApi } from "../../api/stock";
-import type { Product } from "../../api/products";
-import { productApi } from "../../api/products";
-import type { Warehouse } from "../../api/warehouses";
-import { warehouseApi } from "../../api/warehouses";
+import { useStockItems, useCreateStockItem, useAdjustStock, useDeleteStockItem } from "../../hooks/queries/useStock";
+import { useProducts } from "../../hooks/queries/useProducts";
+import { useWarehouses } from "../../hooks/queries/useWarehouses";
 import { useRole } from "../../hooks/useRole";
 import SidePanel from "../../components/SidePanel";
 import StockCreateForm from "./StockCreateForm";
 import StockAdjustForm from "./StockAdjustForm";
 
 export default function StockPage() {
-  const [stockItems, setStockItems] = useState<StockItem[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: stockItems = [], isLoading } = useStockItems();
+  const { data: products = [] } = useProducts();
+  const { data: warehouses = [] } = useWarehouses();
+
+  const createStockItem = useCreateStockItem();
+  const adjustStock = useAdjustStock();
+  const deleteStockItem = useDeleteStockItem();
+
   const [createPanelOpen, setCreatePanelOpen] = useState(false);
   const [adjustingItem, setAdjustingItem] = useState<StockItem | undefined>(undefined);
   const [actionError, setActionError] = useState<string | null>(null);
   const { canWrite, canDelete } = useRole();
 
-  const loadData = async () => {
-    setLoading(true);
-    const [stockData, productData, warehouseData] = await Promise.all([
-      stockApi.getAll(),
-      productApi.getAll(),
-      warehouseApi.getAll(),
-    ]);
-    setStockItems(stockData);
-    setProducts(productData);
-    setWarehouses(warehouseData);
-    setLoading(false);
-  };
-
-  useEffect(() => { loadData(); }, []);
-
   const handleCreate = async (data: any) => {
-    await stockApi.create(data);
+    await createStockItem.mutateAsync(data);
     setCreatePanelOpen(false);
-    await loadData();
   };
 
   const handleAdjust = async (quantityChange: number) => {
     if (!adjustingItem) return;
-    await stockApi.adjust({
+    await adjustStock.mutateAsync({
       productId: adjustingItem.productId,
       warehouseId: adjustingItem.warehouseId,
       quantityChange,
     });
     setAdjustingItem(undefined);
-    await loadData();
   };
 
   const handleDelete = async (item: StockItem) => {
     setActionError(null);
     if (!window.confirm(`Delete stock record for "${item.productName}" at "${item.warehouseName}"? This removes tracking entirely.`)) return;
     try {
-      await stockApi.delete(item.id);
-      await loadData();
+      await deleteStockItem.mutateAsync(item.id);
     } catch (err: any) {
       setActionError(err?.response?.data?.message ?? "Failed to delete stock record.");
     }
@@ -72,7 +56,7 @@ export default function StockPage() {
 
       {actionError && <div className="form-error" style={{ marginBottom: 12 }}>{actionError}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div className="loading-state">Loading stock…</div>
       ) : stockItems.length === 0 ? (
         <div className="empty-state">No stock records yet. {canWrite && "Create one to get started."}</div>

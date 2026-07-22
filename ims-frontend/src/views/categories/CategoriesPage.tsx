@@ -1,42 +1,35 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Category } from "../../api/categories";
-import { categoryApi } from "../../api/categories";
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "../../hooks/queries/useCategories";
 import { useRole } from "../../hooks/useRole";
 import SidePanel from "../../components/SidePanel";
 import CategoryForm from "./CategoryForm";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: categories = [], isLoading } = useCategories();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
+
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<Category | undefined>(undefined);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { canWrite, canDelete } = useRole();
 
-  const loadData = async () => {
-    setLoading(true);
-    setCategories(await categoryApi.getAll());
-    setLoading(false);
-  };
-
-  useEffect(() => { loadData(); }, []);
-
   const openCreate = () => { setEditing(undefined); setPanelOpen(true); };
   const openEdit = (c: Category) => { setEditing(c); setPanelOpen(true); };
 
   const handleSubmit = async (data: any) => {
-    if (editing) await categoryApi.update(editing.id, data);
-    else await categoryApi.create(data);
+    if (editing) await updateCategory.mutateAsync({ id: editing.id, data });
+    else await createCategory.mutateAsync(data);
     setPanelOpen(false);
-    await loadData();
   };
 
   const handleDelete = async (c: Category) => {
     setDeleteError(null);
     if (!window.confirm(`Delete category "${c.name}"? This cannot be undone.`)) return;
     try {
-      await categoryApi.delete(c.id);
-      await loadData();
+      await deleteCategory.mutateAsync(c.id);
     } catch (err: any) {
       setDeleteError(err?.response?.data?.message ?? "Failed to delete category.");
     }
@@ -51,7 +44,7 @@ export default function CategoriesPage() {
 
       {deleteError && <div className="form-error" style={{ marginBottom: 12 }}>{deleteError}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div className="loading-state">Loading categories…</div>
       ) : categories.length === 0 ? (
         <div className="empty-state">No categories yet. {canWrite && "Create one to get started."}</div>

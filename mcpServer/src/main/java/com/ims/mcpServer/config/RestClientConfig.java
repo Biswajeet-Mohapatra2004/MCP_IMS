@@ -1,5 +1,6 @@
 package com.ims.mcpServer.config;
 
+import com.ims.mcpServer.context.ForwardedTokenContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,15 +36,24 @@ public class RestClientConfig {
         return RestClient.builder()
                 .baseUrl(baseUrl)
                 .requestInterceptor((request, body, execution) -> {
-                    String token = fetchToken(tokenRestClient);
+                    String token = resolveToken(tokenRestClient);
                     request.getHeaders().setBearerAuth(token);
                     return execution.execute(request, body);
                 })
                 .build();
     }
 
+    private String resolveToken(RestClient tokenRestClient) {
+        String forwardedToken = ForwardedTokenContext.get();
+        System.out.println("[DEBUG] resolveToken | using forwarded: " + (forwardedToken != null));
+        if (forwardedToken != null) {
+            return forwardedToken;   // use the real logged-in user's token
+        }
+        return fetchServiceAccountToken(tokenRestClient);   // fallback: machine identity
+    }
+
     @SuppressWarnings("unchecked")
-    private String fetchToken(RestClient tokenRestClient) {
+    private String fetchServiceAccountToken(RestClient tokenRestClient) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("client_id", clientId);
         form.add("client_secret", clientSecret);

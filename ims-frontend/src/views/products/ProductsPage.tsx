@@ -1,67 +1,43 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Product } from "../../api/products";
-import { productApi } from "../../api/products";
-import type { Category } from "../../api/categories";
-import { categoryApi } from "../../api/categories";
-import type { Supplier } from "../../api/suppliers";
-import { supplierApi } from "../../api/suppliers";
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from "../../hooks/queries/useProducts";
+import { useCategories } from "../../hooks/queries/useCategories";
+import { useSuppliers } from "../../hooks/queries/useSuppliers";
 import { useRole } from "../../hooks/useRole";
 import SidePanel from "../../components/SidePanel";
 import ProductForm from "./ProductForm";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);   // <-- must exist, defaulted to []
-  const [loading, setLoading] = useState(true);
+  const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useCategories();
+  const { data: suppliers = [] } = useSuppliers();
+
+  const createProduct = useCreateProduct();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
+
   const [panelOpen, setPanelOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { canWrite, canDelete } = useRole();
 
-  const loadData = async () => {
-    setLoading(true);
-    const [productsData, categoriesData, suppliersData] = await Promise.all([
-      productApi.getAll(),
-      categoryApi.getAll(),
-      supplierApi.getAll(),          // <-- must be fetched
-    ]);
-    setProducts(productsData);
-    setCategories(categoriesData);
-    setSuppliers(suppliersData);      // <-- must be set
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const openCreate = () => {
-    setEditingProduct(undefined);
-    setPanelOpen(true);
-  };
-
-  const openEdit = (product: Product) => {
-    setEditingProduct(product);
-    setPanelOpen(true);
-  };
+  const openCreate = () => { setEditingProduct(undefined); setPanelOpen(true); };
+  const openEdit = (product: Product) => { setEditingProduct(product); setPanelOpen(true); };
 
   const handleSubmit = async (data: any) => {
     if (editingProduct) {
-      await productApi.update(editingProduct.id, data);
+      await updateProduct.mutateAsync({ id: editingProduct.id, data });
     } else {
-      await productApi.create(data);
+      await createProduct.mutateAsync(data);
     }
     setPanelOpen(false);
-    await loadData();
   };
 
   const handleDelete = async (product: Product) => {
     setDeleteError(null);
     if (!window.confirm(`Delete product "${product.name}"? This cannot be undone.`)) return;
     try {
-      await productApi.delete(product.id);
-      await loadData();
+      await deleteProduct.mutateAsync(product.id);
     } catch (err: any) {
       setDeleteError(err?.response?.data?.message ?? "Failed to delete product.");
     }
@@ -71,14 +47,12 @@ export default function ProductsPage() {
     <div className="entity-page">
       <div className="entity-page-header">
         <h2 className="panel-title">Products</h2>
-        {canWrite && (
-          <button className="btn-primary" onClick={openCreate}>+ New Product</button>
-        )}
+        {canWrite && <button className="btn-primary" onClick={openCreate}>+ New Product</button>}
       </div>
 
       {deleteError && <div className="form-error" style={{ marginBottom: 12 }}>{deleteError}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div className="loading-state">Loading products…</div>
       ) : products.length === 0 ? (
         <div className="empty-state">No products yet. {canWrite && "Create one to get started."}</div>

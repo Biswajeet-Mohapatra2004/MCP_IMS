@@ -1,42 +1,35 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Warehouse } from "../../api/warehouses";
-import { warehouseApi } from "../../api/warehouses";
+import { useWarehouses, useCreateWarehouse, useUpdateWarehouse, useDeleteWarehouse } from "../../hooks/queries/useWarehouses";
 import { useRole } from "../../hooks/useRole";
 import SidePanel from "../../components/SidePanel";
 import WarehouseForm from "./WarehouseForm";
 
 export default function WarehousesPage() {
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: warehouses = [], isLoading } = useWarehouses();
+  const createWarehouse = useCreateWarehouse();
+  const updateWarehouse = useUpdateWarehouse();
+  const deleteWarehouse = useDeleteWarehouse();
+
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<Warehouse | undefined>(undefined);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { canWrite, canDelete } = useRole();
 
-  const loadData = async () => {
-    setLoading(true);
-    setWarehouses(await warehouseApi.getAll());
-    setLoading(false);
-  };
-
-  useEffect(() => { loadData(); }, []);
-
   const openCreate = () => { setEditing(undefined); setPanelOpen(true); };
   const openEdit = (w: Warehouse) => { setEditing(w); setPanelOpen(true); };
 
   const handleSubmit = async (data: any) => {
-    if (editing) await warehouseApi.update(editing.id, data);
-    else await warehouseApi.create(data);
+    if (editing) await updateWarehouse.mutateAsync({ id: editing.id, data });
+    else await createWarehouse.mutateAsync(data);
     setPanelOpen(false);
-    await loadData();
   };
 
   const handleDelete = async (w: Warehouse) => {
     setDeleteError(null);
     if (!window.confirm(`Delete warehouse "${w.name}"? This cannot be undone.`)) return;
     try {
-      await warehouseApi.delete(w.id);
-      await loadData();
+      await deleteWarehouse.mutateAsync(w.id);
     } catch (err: any) {
       setDeleteError(err?.response?.data?.message ?? "Failed to delete warehouse.");
     }
@@ -51,7 +44,7 @@ export default function WarehousesPage() {
 
       {deleteError && <div className="form-error" style={{ marginBottom: 12 }}>{deleteError}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div className="loading-state">Loading warehouses…</div>
       ) : warehouses.length === 0 ? (
         <div className="empty-state">No warehouses yet. {canWrite && "Create one to get started."}</div>

@@ -1,5 +1,7 @@
 package com.ims.mcpClient.contoller;
 
+import com.ims.mcpClient.context.RequestTokenContext;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.tool.ToolCallbackProvider;
@@ -23,10 +25,19 @@ public class InventoryChatController {
     }
 
     @PostMapping("/chat")
-    public ResponseEntity<String> chat(@RequestParam(name = "query") String query) {
-        String response = chatClient.prompt(query)
-                .call()
-                .content();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<String> chat(@RequestParam(name = "query") String query, HttpServletRequest request)  {
+        String authHeader = request.getHeader("Authorization");
+        String userToken = (authHeader != null && authHeader.startsWith("Bearer "))
+                ? authHeader.substring(7)
+                : null;
+
+        try {
+            System.out.println("[DEBUG] Controller thread: " + Thread.currentThread().getName() + " | token present: " + (userToken != null));
+            RequestTokenContext.set(userToken);
+            String response = chatClient.prompt(query).call().content();
+            return ResponseEntity.ok(response);
+        } finally {
+            RequestTokenContext.clear();
+        }
     }
 }

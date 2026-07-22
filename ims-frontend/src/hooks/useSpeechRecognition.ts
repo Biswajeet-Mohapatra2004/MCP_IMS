@@ -22,7 +22,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     if (!isSupported) return;
 
     const recognition = new SpeechRecognitionCtor();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
