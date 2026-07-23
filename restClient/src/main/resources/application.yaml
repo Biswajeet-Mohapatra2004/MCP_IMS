@@ -5,16 +5,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/ims-realm
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/ims-realm}
 
   docker:
     compose:
       lifecycle-management: start-only
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ims_db
-    username: ims_user
-    password: ims_pass
+    url: ${NEON_DB_URL:jdbc:postgresql://localhost:5432/ims_db}
+    username: ${NEON_DB_USERNAME:ims_user}
+    password: ${NEON_DB_PASSWORD:ims_pass}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -24,8 +24,13 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+
 server:
-    port: 8081
+    port: ${PORT:8081}
+
+app:
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
 
 logging:
   level:
