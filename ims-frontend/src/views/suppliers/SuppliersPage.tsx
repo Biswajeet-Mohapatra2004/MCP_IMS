@@ -3,7 +3,7 @@ import type { Supplier } from "../../api/suppliers";
 import { useSuppliers, useCreateSupplier, useUpdateSupplier, useDeleteSupplier } from "../../hooks/queries/useSuppliers";
 import { useRole } from "../../hooks/useRole";
 import SidePanel from "../../components/SidePanel";
-import SupplierForm from "./SupplierForm";
+import SupplierForm from "./supplierForm";
 
 export default function SuppliersPage() {
   const { data: suppliers = [], isLoading } = useSuppliers();
