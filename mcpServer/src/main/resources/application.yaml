@@ -18,10 +18,10 @@ server:
 
 inventory:
   api:
-    base-url: http://localhost:8081
+    base-url: ${INVENTORY_API_BASE_URL:http://localhost:8081}
 
 keycloak:
-  token-url: http://localhost:8180/realms/ims-realm/protocol/openid-connect/token
+  token-url: ${KEYCLOAK_TOKEN_GEN:http://localhost:8180/realms/ims-realm/protocol/openid-connect/token}
   client-id: ims-client
   client-secret: ${KEYCLOAK_CLIENT_SECRET}
 
