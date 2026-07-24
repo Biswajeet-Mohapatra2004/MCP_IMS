@@ -14,7 +14,7 @@ spring:
         instructions: "Provides tools to manage an inventory system: products, categories, warehouses, stock levels, and suppliers."
 
 server:
-  port: 8082
+  port: ${PORT:8080}
 
 inventory:
   api:
