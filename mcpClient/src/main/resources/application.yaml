@@ -25,8 +25,8 @@ server:
   port: ${PORT:8081}
 
 app:
-  cors:
-    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  CORS:
+    ALLOWED-ORIGIN: ${FRONTEND_ORIGIN:http:http//localhost:5173}
 
 logging:
   level:
