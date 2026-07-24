@@ -19,10 +19,10 @@ spring:
         streamable-http:
           connections:
            ims-mcp-server:
-              url: http://localhost:8082/mcp
+              url: ${MCP_SERVER_URL:http://localhost:8082/mcp}
 
 server:
-  port: 8080
+  port: ${PORT:8081}
 
 logging:
   level:
