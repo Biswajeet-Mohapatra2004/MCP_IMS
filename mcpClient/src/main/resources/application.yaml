@@ -24,6 +24,11 @@ spring:
 server:
   port: ${PORT:8081}
 
+APP:
+  CORS:
+    ALLOWED:
+      ORIGIN: ${FRONTEND_ORIGIN:http://localhost:5173}
+
 logging:
   level:
     root: INFO
