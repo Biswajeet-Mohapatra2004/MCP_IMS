@@ -7,6 +7,7 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 import java.util.Map;
 
+
 @Component
 public class InventoryApiClient {
 
@@ -119,5 +120,9 @@ public class InventoryApiClient {
 
     public void deleteStockItem(Long id) {
         restClient.delete().uri("/api/stock-items/{id}", id).retrieve().toBodilessEntity();
+    }
+
+    public Map<String, Object> getInsightsSummary() {
+        return restClient.get().uri("/api/insights/summary").retrieve().body(Map.class);
     }
 }

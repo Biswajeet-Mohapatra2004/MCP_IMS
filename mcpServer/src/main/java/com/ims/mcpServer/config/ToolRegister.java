@@ -10,15 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class ToolRegister {
     @Bean
     ToolCallbackProvider toolCallbackProvider(CategoryTools categoryTools, ProductTools productTools,
-                                              StockTools stockTools, SupplierTools supplierTools, WarehouseTools warehouseTools) {
+                                              StockTools stockTools, SupplierTools supplierTools,
+                                              WarehouseTools warehouseTools, InsightsTools insightsTools) {
         return MethodToolCallbackProvider.builder()
-                .toolObjects(
-                        categoryTools,
-                        productTools,
-                        stockTools,
-                        supplierTools,
-                        warehouseTools
-                )
+                .toolObjects(categoryTools, productTools, stockTools, supplierTools, warehouseTools, insightsTools)
                 .build();
     }
 }

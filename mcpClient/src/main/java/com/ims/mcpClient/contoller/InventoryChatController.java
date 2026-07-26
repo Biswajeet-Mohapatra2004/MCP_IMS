@@ -6,10 +6,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ai")
@@ -39,5 +36,18 @@ public class InventoryChatController {
         } finally {
             RequestTokenContext.clear();
         }
+    }
+
+    @GetMapping("/insights")
+    public ResponseEntity<String> insights() {
+        String prompt = """
+        Call the getInsightsSummary tool to retrieve current inventory analytics, then write a
+        concise, prioritized narrative (3-5 sentences) for a manager reading this at a glance.
+        Highlight the most concerning low-stock situations, any category or warehouse that stands
+        out, and end with one clear recommended action. Do not just restate raw numbers — synthesize
+        and prioritize them.
+        """;
+        String response = chatClient.prompt(prompt).call().content();
+        return ResponseEntity.ok(response);
     }
 }

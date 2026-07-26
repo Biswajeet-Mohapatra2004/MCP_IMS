@@ -4,8 +4,9 @@ import CategoriesPage from "./categories/CategoriesPage";
 import WarehousesPage from "./warehouses/WarehousesPage";
 import SuppliersPage from "./suppliers/SuppliersPage";
 import StockPage from "./stock/StockPage";
+import InsightsPage from "./insights/InsightsPage";
 
-type Entity = "products" | "categories" | "warehouses" | "stock" | "suppliers";
+type Entity = "products" | "categories" | "warehouses" | "stock" | "suppliers" | "insights";
 
 export default function ConsoleView() {
   const [activeEntity, setActiveEntity] = useState<Entity>("products");
@@ -26,6 +27,7 @@ export default function ConsoleView() {
         {activeEntity === "warehouses" && <WarehousesPage />}
         {activeEntity === "stock" && <StockPage />}
         {activeEntity === "suppliers" && <SuppliersPage />}
+        {activeEntity === "insights" && <InsightsPage />}
       </div>
     </div>
   );
