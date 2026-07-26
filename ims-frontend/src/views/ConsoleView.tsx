@@ -19,6 +19,7 @@ export default function ConsoleView() {
         <button className={activeEntity === "warehouses" ? "active" : ""} onClick={() => setActiveEntity("warehouses")}>Warehouses</button>
         <button className={activeEntity === "stock" ? "active" : ""} onClick={() => setActiveEntity("stock")}>Stock</button>
         <button className={activeEntity === "suppliers" ? "active" : ""} onClick={() => setActiveEntity("suppliers")}>Suppliers</button>
+        <button className={activeEntity === "insights" ? "active" : ""} onClick={() => setActiveEntity("insights")}>Insights</button>
       </div>
 
       <div className="entity-content">
