@@ -110,4 +110,41 @@ public class InsightsServiceImpl implements InsightsService {
                 .map(productMapper::toResponse)
                 .toList();
     }
+
+    public List<ReorderCandidate> getReorderCandidates() {
+        List<Product> products = productRepository.findAll();
+        List<StockItem> stockItems = stockItemRepository.findAll();
+
+        Map<Long, List<StockItem>> stockByProductId = stockItems.stream()
+                .collect(Collectors.groupingBy(si -> si.getProduct().getId()));
+
+        return products.stream()
+                .map(p -> {
+                    List<StockItem> items = stockByProductId.getOrDefault(p.getId(), List.of());
+                    int totalQty = items.stream().mapToInt(StockItem::getQuantity).sum();
+                    if (totalQty >= p.getReorderThreshold()) return null; // not a candidate
+
+                    List<ReorderCandidate.SupplierOption> supplierOptions = p.getSuppliers().stream()
+                            .map(s -> new ReorderCandidate.SupplierOption(s.getId(), s.getName()))
+                            .toList();
+
+                    List<ReorderCandidate.WarehouseStock> warehouseStocks = items.stream()
+                            .map(si -> new ReorderCandidate.WarehouseStock(
+                                    si.getWarehouse().getId(), si.getWarehouse().getName(), si.getQuantity()))
+                            .toList();
+
+                    return ReorderCandidate.builder()
+                            .productId(p.getId())
+                            .productName(p.getName())
+                            .sku(p.getSku())
+                            .currentQuantity(totalQty)
+                            .reorderThreshold(p.getReorderThreshold())
+                            .unitPrice(p.getUnitPrice())
+                            .suppliers(supplierOptions)
+                            .warehouseStock(warehouseStocks)
+                            .build();
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
 }

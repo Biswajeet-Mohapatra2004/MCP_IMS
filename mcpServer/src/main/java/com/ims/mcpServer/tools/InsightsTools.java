@@ -22,4 +22,13 @@ public class InsightsTools {
             return e.getMessage();
         }
     }
+
+    @Tool(description = "Retrieves the list of products currently below their reorder threshold, along with their linked suppliers and current per-warehouse stock levels. Use this as the basis for proposing a reorder plan — do not invent supplier or warehouse information not present in this data.")
+    public Object getReorderCandidates() {
+        try {
+            return apiClient.getReorderCandidates();
+        } catch (ApiCallException e) {
+            return e.getMessage();
+        }
+    }
 }

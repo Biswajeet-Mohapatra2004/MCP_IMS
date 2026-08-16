@@ -125,4 +125,8 @@ public class InventoryApiClient {
     public Map<String, Object> getInsightsSummary() {
         return restClient.get().uri("/api/insights/summary").retrieve().body(Map.class);
     }
+
+    public Object getReorderCandidates() {
+        return restClient.get().uri("/api/insights/reorder-candidates").retrieve().body(List.class);
+    }
 }
