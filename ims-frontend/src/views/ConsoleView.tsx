@@ -2,11 +2,12 @@ import { useState } from "react";
 import ProductsPage from "./products/ProductsPage";
 import CategoriesPage from "./categories/CategoriesPage";
 import WarehousesPage from "./warehouses/WarehousesPage";
-import SuppliersPage from "./suppliers/SuppliersPage";
 import StockPage from "./stock/StockPage";
+import SuppliersPage from "./suppliers/SuppliersPage";
 import InsightsPage from "./insights/InsightsPage";
+import ReorderAgentPage from "./reorder/ReorderAgentPage";
 
-type Entity = "products" | "categories" | "warehouses" | "stock" | "suppliers" | "insights";
+type Entity = "products" | "categories" | "warehouses" | "stock" | "suppliers" | "insights" | "reorder";
 
 export default function ConsoleView() {
   const [activeEntity, setActiveEntity] = useState<Entity>("products");
