@@ -20,6 +20,7 @@ export default function ConsoleView() {
         <button className={activeEntity === "stock" ? "active" : ""} onClick={() => setActiveEntity("stock")}>Stock</button>
         <button className={activeEntity === "suppliers" ? "active" : ""} onClick={() => setActiveEntity("suppliers")}>Suppliers</button>
         <button className={activeEntity === "insights" ? "active" : ""} onClick={() => setActiveEntity("insights")}>Insights</button>
+        <button className={activeEntity === "reorder" ? "active" : ""} onClick={() => setActiveEntity("reorder")}>Reorder Agent</button>
       </div>
 
       <div className="entity-content">
@@ -29,6 +30,7 @@ export default function ConsoleView() {
         {activeEntity === "stock" && <StockPage />}
         {activeEntity === "suppliers" && <SuppliersPage />}
         {activeEntity === "insights" && <InsightsPage />}
+        {activeEntity === "reorder" && <ReorderAgentPage />}
       </div>
     </div>
   );

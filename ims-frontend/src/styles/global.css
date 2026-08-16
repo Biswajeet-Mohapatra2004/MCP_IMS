@@ -515,3 +515,91 @@ s
   margin: 0 0 12px 0;
   color: var(--text-secondary);
 }
+
+.reorder-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reorder-select-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.reorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reorder-card {
+  display: flex;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+}
+
+.reorder-card-checkbox {
+  padding-top: 2px;
+}
+
+.reorder-card-body {
+  flex: 1;
+}
+
+.reorder-card-header {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.reorder-card-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.reorder-card-reasoning {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-style: italic;
+  margin: 8px 0 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.reorder-card-status {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 2px;
+}
+
+.reorder-card-status-executed {
+  background: #E6F4EA;
+  color: var(--success);
+}
+
+.reorder-card-status-skipped {
+  background: #FDECEC;
+  color: var(--error);
+}
+
+.reorder-card-executed {
+  border-left: 3px solid var(--success);
+}
+
+.reorder-card-skipped {
+  border-left: 3px solid var(--error);
+}
